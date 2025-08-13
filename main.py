@@ -1,4 +1,17 @@
+import requests
 import json
+
+
+BASE_URL = "https://api.api-ninjas.com/v1/animals?"
+API_KEY = "f34fZuedb6TQDadSf68Wsw==Qg7HEFhopF0PVHNz"
+
+
+def load_data_from_api(animal_name):
+    url = f"{BASE_URL}name={animal_name}"
+    response = requests.get(url, headers={"X-Api-Key": API_KEY})
+    print(response)
+    data = response.json()
+    return data
 
 
 def load_data_from_json(file_path):
@@ -45,12 +58,14 @@ def generate_html_code(overall_data):
 
 
 def main():
-    overall_animals_data = load_data_from_json('animals_data.json')
-    desired_output = generate_html_code(overall_animals_data)
-    original_html_content = load_data_from_html('animals_template.html')
-    updated_html_content = original_html_content.replace("__REPLACE_ANIMALS_INFO__", desired_output)
-    updated_html_content = updated_html_content.replace('<style>', '<meta charset="UTF-8" /> \n\t<style>')
-    write_new_html_file('animals.html', updated_html_content)
+    animal_name = input("Enter your animal: ")
+    print(load_data_from_api(animal_name))
+    #overall_animals_data = load_data_from_json('animals_data.json')
+    #desired_output = generate_html_code(overall_animals_data)
+    #original_html_content = load_data_from_html('animals_template.html')
+    #updated_html_content = original_html_content.replace("__REPLACE_ANIMALS_INFO__", desired_output)
+    #updated_html_content = updated_html_content.replace('<style>', '<meta charset="UTF-8" /> \n\t<style>')
+    #write_new_html_file('animals.html', updated_html_content)
 
 
 if __name__ == "__main__":
