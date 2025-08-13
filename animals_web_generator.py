@@ -1,25 +1,4 @@
-import requests
-import json
-
-
-BASE_URL = "https://api.api-ninjas.com/v1/animals?"
-API_KEY = "f34fZuedb6TQDadSf68Wsw==Qg7HEFhopF0PVHNz"
-
-
-def load_data_from_api(animal_name):
-    url = f"{BASE_URL}name={animal_name}"
-    response = requests.get(url, headers={"X-Api-Key": API_KEY})
-    data = response.json()
-    if len(data) == 0:
-        no_output_message = f"<h2>The animal {animal_name} doesn't exist.</h2>"
-        return no_output_message
-    return data
-
-
-def load_data_from_json(file_path):
-    """ Loads a JSON file """
-    with open(file_path, "r") as handle:
-        return json.load(handle)
+import data_fetcher
 
 
 def load_data_from_html(file_path):
@@ -54,17 +33,17 @@ def serialize_animal(animal):
 def generate_html_code(overall_data):
     """ iterates through all animals """
     output = ""
-    if not type(overall_data) == list:
-        output = f'<li class="cards__item">	<div class="card__title">{overall_data}</div></li>'
-    else:
-        for animal in overall_data:
-            output += serialize_animal(animal)
+    if '<h4>The animal' in overall_data[0] and "doesn't exist.</h4>" in overall_data[0]:
+        output = f'<li class="cards__item">	<div class="card__title">{overall_data[0]}</div></li>'
+        return output
+    for animal in overall_data:
+        output += serialize_animal(animal)
     return output
 
 
 def main():
-    animal_name = input("Enter a name of an animal: ")
-    animals_data = load_data_from_api(animal_name.lower())
+    animal_name = input("Enter a name of an animal: ").lower()
+    animals_data = data_fetcher.fetch_data(animal_name)
     desired_output = generate_html_code(animals_data)
     original_html_content = load_data_from_html('animals_template.html')
     updated_html_content = original_html_content.replace("__REPLACE_ANIMALS_INFO__", desired_output)
